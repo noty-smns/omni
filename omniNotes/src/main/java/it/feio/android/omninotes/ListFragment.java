@@ -825,6 +825,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
           filterCategoryArchived(false);
           break;
         case R.id.menu_uncomplete_checklists:
+          item.setVisible(false);
           filterByUncompleteChecklists();
           break;
         case R.id.menu_tags:
