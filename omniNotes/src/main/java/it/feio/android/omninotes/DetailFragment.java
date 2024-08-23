@@ -718,7 +718,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
   private void getLocation(OnGeoUtilResultListener onGeoUtilResultListener) {
     PermissionsHelper
-        .requestPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, R.string
+        .requestPermission(this, Manifest.permission.ACCESS_FINE_LOCATION, R.string
                 .permission_coarse_location, binding.snackbarPlaceholder,
             () -> GeocodeHelper.getLocation(onGeoUtilResultListener));
   }
@@ -1326,7 +1326,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
       return;
     }
 
-    PermissionsHelper.requestPermission(getActivity(), CAMERA,
+    PermissionsHelper.requestPermission(this, CAMERA,
         R.string.permission_camera, binding.snackbarPlaceholder, () -> {
           // Checks for created file validity
           File f = StorageHelper.createNewAttachmentFile(mainActivity, MIME_TYPE_IMAGE_EXT);
@@ -1349,7 +1349,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
       return;
     }
 
-    PermissionsHelper.requestPermission(getActivity(), CAMERA,
+    PermissionsHelper.requestPermission(this, CAMERA,
         R.string.permission_camera, binding.snackbarPlaceholder, () -> {
           // File is stored in custom ON folder to speedup the attachment
           var f = StorageHelper.createNewAttachmentFile(mainActivity, MIME_TYPE_VIDEO_EXT);
@@ -1795,7 +1795,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
   }
 
   private void startRecording(View v) {
-    PermissionsHelper.requestPermission(getActivity(), Manifest.permission.RECORD_AUDIO,
+    PermissionsHelper.requestPermission(this, Manifest.permission.RECORD_AUDIO,
         R.string.permission_audio_recording, binding.snackbarPlaceholder, () -> {
 
           isRecording = true;

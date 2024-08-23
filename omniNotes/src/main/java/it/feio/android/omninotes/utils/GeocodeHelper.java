@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationParams;
-import io.nlopez.smartlocation.rx.ObservableFactory;
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.listeners.OnGeoUtilResultListener;
@@ -45,13 +44,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import rx.Observable;
-import rx.Subscriber;
 
 
 public class GeocodeHelper implements LocationListener {
@@ -86,33 +82,21 @@ public class GeocodeHelper implements LocationListener {
 
 
   public static void getLocation(OnGeoUtilResultListener onGeoUtilResultListener) {
-      SmartLocation.LocationControl bod = SmartLocation.with(OmniNotes.getAppContext())
+    SmartLocation.LocationControl bod = SmartLocation.with(OmniNotes.getAppContext())
         .location(getProvider(OmniNotes.getAppContext()))
         .config(LocationParams.NAVIGATION).oneFix();
 
-    Observable<Location> locations = ObservableFactory.from(bod).timeout(2, TimeUnit.SECONDS);
-    locations.subscribe(new Subscriber<>() {
-      @Override
-      public void onNext(Location location) {
-        onGeoUtilResultListener.onLocationRetrieved(location);
-        unsubscribe();
-      }
+    var location = bod.oneFix().getLastLocation();
 
-      @Override
-      public void onCompleted() {
-        // Nothing to do
+    if (location != null) {
+      onGeoUtilResultListener.onLocationRetrieved(location);
+    } else {
+      if (checkHighAccuracyLocationProvider(OmniNotes.getAppContext())) {
+        onGeoUtilResultListener.onLocationUnavailable();
+      } else {
+        onGeoUtilResultListener.onLocationNotEnabled();
       }
-
-      @Override
-      public void onError(Throwable e) {
-        if(checkHighAccuracyLocationProvider(OmniNotes.getAppContext()) == true) {
-          onGeoUtilResultListener.onLocationUnavailable();
-        }else{
-          onGeoUtilResultListener.onLocationNotEnabled();
-        }
-        unsubscribe();
-      }
-    });
+    }
   }
 
 

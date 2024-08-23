@@ -524,7 +524,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
       enableFileLogging.setOnPreferenceChangeListener((preference, newValue) -> {
         if ((Boolean) newValue) {
           PermissionsHelper
-              .requestPermission(getActivity(), permission.WRITE_EXTERNAL_STORAGE, R
+              .requestPermission(this, permission.WRITE_EXTERNAL_STORAGE, R
                       .string.permission_external_storage,
                   getActivity().findViewById(R.id.crouton_handle),
                   () -> enableFileLogging.setChecked(true));
