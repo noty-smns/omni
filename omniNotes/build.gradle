@@ -44,6 +44,7 @@ android {
         applicationId project.PACKAGE
         minSdkVersion project.MIN_SDK
         targetSdkVersion project.TARGET_SDK
+        compileSdkVersion Integer.parseInt(project.COMPILE_SDK)
         versionName project.VERSION_NAME
         versionCode Integer.parseInt(project.VERSION_CODE)
         vectorDrawables.useSupportLibrary = true
@@ -107,7 +108,6 @@ android {
             applicationIdSuffix ".alpha"
         }
     }
-
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
