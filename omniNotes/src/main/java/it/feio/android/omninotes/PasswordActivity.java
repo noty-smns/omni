@@ -37,9 +37,6 @@ import it.feio.android.omninotes.models.ONStyle;
 import it.feio.android.omninotes.models.PasswordValidator;
 import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.Security;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
 public class PasswordActivity extends BaseActivity {
@@ -163,38 +160,31 @@ public class PasswordActivity extends BaseActivity {
           .content(R.string.agree_unlocking_all_notes)
           .positiveText(R.string.ok)
           .onPositive((dialog, which) -> PasswordHelper.removePassword()).build().show();
-    } else if (passwordText.length() == 0) {
+    } else if (passwordText.isEmpty()) {
       Crouton.makeText(mActivity, R.string.empty_password, ONStyle.WARN, croutonHandle).show();
     } else {
-      Observable
-          .from(DbHelper.getInstance().getNotesWithLock(true))
-          .subscribeOn(Schedulers.newThread())
-          .observeOn(AndroidSchedulers.mainThread())
-          .doOnSubscribe(() -> Prefs.edit()
-              .putString(PREF_PASSWORD, Security.md5(passwordText))
-              .putString(PREF_PASSWORD_QUESTION, questionText)
-              .putString(PREF_PASSWORD_ANSWER, Security.md5(answerText))
-              .apply())
-          .doOnNext(note -> DbHelper.getInstance().updateNote(note, false))
-          .doOnCompleted(() -> {
-            Crouton crouton = Crouton
-                .makeText(mActivity, R.string.password_successfully_changed, ONStyle
-                    .CONFIRM, croutonHandle);
-            crouton.setLifecycleCallback(new LifecycleCallback() {
-              @Override
-              public void onDisplayed() {
-                // Does nothing!
-              }
+      Prefs.edit()
+          .putString(PREF_PASSWORD, Security.md5(passwordText))
+          .putString(PREF_PASSWORD_QUESTION, questionText)
+          .putString(PREF_PASSWORD_ANSWER, Security.md5(answerText))
+          .apply();
+      DbHelper.getInstance().getNotesWithLock(true)
+          .forEach(note -> DbHelper.getInstance().updateNote(note, false));
+      var crouton = Crouton.makeText(mActivity, R.string.password_successfully_changed,
+          ONStyle.CONFIRM, croutonHandle);
+      crouton.setLifecycleCallback(new LifecycleCallback() {
+        @Override
+        public void onDisplayed() {
+          // Does nothing!
+        }
 
 
-              @Override
-              public void onRemoved() {
-                onBackPressed();
-              }
-            });
-            crouton.show();
-          })
-          .subscribe();
+        @Override
+        public void onRemoved() {
+          onBackPressed();
+        }
+      });
+      crouton.show();
     }
   }
 
@@ -210,15 +200,15 @@ public class PasswordActivity extends BaseActivity {
       return true;
     }
 
-    boolean passwordOk = password.getText().toString().length() > 0;
+    boolean passwordOk = !password.getText().toString().isEmpty();
     boolean passwordCheckOk =
-        passwordCheck.getText().toString().length() > 0 && password.getText().toString()
+        !passwordCheck.getText().toString().isEmpty() && password.getText().toString()
             .equals(
                 passwordCheck.getText().toString());
-    boolean questionOk = question.getText().toString().length() > 0;
-    boolean answerOk = answer.getText().toString().length() > 0;
+    boolean questionOk = !question.getText().toString().isEmpty();
+    boolean answerOk = !answer.getText().toString().isEmpty();
     boolean answerCheckOk =
-        answerCheck.getText().toString().length() > 0 && answer.getText().toString().equals
+        !answerCheck.getText().toString().isEmpty() && answer.getText().toString().equals
             (answerCheck.getText().toString());
 
     if (!passwordOk || !passwordCheckOk || !questionOk || !answerOk || !answerCheckOk) {

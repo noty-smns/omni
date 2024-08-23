@@ -23,7 +23,7 @@ import it.feio.android.omninotes.utils.FileProviderHelper.getShareableUri
 import it.feio.android.omninotes.utils.StorageHelper.createAttachmentFromUri
 import org.junit.Assert.*
 import org.junit.Test
-import rx.Observable.from
+import java.util.stream.Stream
 
 class UpgradeProcessorTest : BaseAndroidTestCase() {
 
@@ -37,11 +37,11 @@ class UpgradeProcessorTest : BaseAndroidTestCase() {
         note.attachmentsList[0] = attachment
         dbHelper.updateNote(note, false)
 
-        assertFalse(from(dbHelper.allAttachments).all { a -> a.uri.scheme != "content" }.toBlocking().single())
+        assertFalse(Stream.of(dbHelper.allAttachments).allMatch { a -> a.single().uri.scheme != "content" });
 
         UpgradeProcessor.process(624, 625)
 
-        assertTrue(from(dbHelper.allAttachments).all { a -> a.uri.scheme != "content" }.toBlocking().single())
+        assertTrue(Stream.of(dbHelper.allAttachments).allMatch { a -> a.single().uri.scheme != "content" });
     }
 
 }

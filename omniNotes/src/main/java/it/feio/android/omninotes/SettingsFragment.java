@@ -30,8 +30,8 @@ import static it.feio.android.omninotes.utils.ConstantsBase.PREF_SNOOZE_DEFAULT;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.reverse;
+import static java.util.stream.Collectors.toList;
 
-import android.Manifest;
 import android.Manifest.permission;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -85,7 +85,6 @@ import java.util.Calendar;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import rx.Observable;
 
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -578,8 +577,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
   private void importNotes(DocumentFileCompat documentFile) {
     String[] backupsArray;
     if (documentFile != null) {
-      backupsArray = Observable.from(documentFile.listFiles()).map(DocumentFileCompat::getName).toList()
-          .toBlocking().single().toArray(new String[0]);
+      backupsArray = documentFile.listFiles().stream().map(DocumentFileCompat::getName)
+          .collect(toList()).toArray(new String[0]);
     } else {
       backupsArray = StorageHelper.getOrCreateExternalStoragePublicDir().list();
     }

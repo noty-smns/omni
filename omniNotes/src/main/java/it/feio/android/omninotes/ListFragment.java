@@ -127,13 +127,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.IntStream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import rx.Observable;
-import rx.functions.Action1;
 
 
 public class ListFragment extends BaseFragment implements OnViewTouchedListener,
@@ -1189,8 +1187,8 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
   }
 
   public void onEvent(NotesUpdatedEvent notesUpdatedEvent) {
-    Observable.from(notesUpdatedEvent.getNotes()).forEach(updatedNote ->
-        Observable.range(0, listAdapter.getNotes().size() - 1)
+    notesUpdatedEvent.getNotes().stream().forEach(updatedNote ->
+        IntStream.range(0, listAdapter.getNotes().size() - 1)
             .filter(i -> listAdapter.getItem(i).get_id().equals(updatedNote.get_id()))
             .forEach(i -> {
               listAdapter.getNotes().set(i, updatedNote);

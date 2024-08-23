@@ -18,7 +18,7 @@
 package it.feio.android.omninotes.helpers.count;
 
 import it.feio.android.omninotes.models.Note;
-import rx.Observable;
+import java.util.stream.Stream;
 
 public class DefaultWordCounter implements WordCounter {
 
@@ -50,11 +50,10 @@ public class DefaultWordCounter implements WordCounter {
   @Override
   public int countChars(Note note) {
     String titleAndContent = note.getTitle() + "\n" + note.getContent();
-    return Observable
-        .from(sanitizeTextForWordsAndCharsCount(note, titleAndContent).split(""))
+    return (int) Stream.of(sanitizeTextForWordsAndCharsCount(note, titleAndContent).split(""))
         .map(String::trim)
         .filter(s -> !s.isEmpty())
-        .count().toBlocking().single();
+        .count();
   }
 
 }

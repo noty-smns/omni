@@ -17,8 +17,6 @@
 
 package it.feio.android.omninotes.utils;
 
-import static rx.Observable.from;
-
 import androidx.core.util.Pair;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.Note;
@@ -96,7 +94,7 @@ public class TagsHelper {
       return text;
     }
     var textCopy = new AtomicReference<>(text);
-    from(tagsToRemove).forEach(tagToRemove -> textCopy.set(removeTag(textCopy.get(), tagToRemove)));
+    tagsToRemove.forEach(tagToRemove -> textCopy.set(removeTag(textCopy.get(), tagToRemove)));
     return textCopy.get();
   }
 
@@ -106,11 +104,10 @@ public class TagsHelper {
   }
 
   private static String tokenizeAndRemoveTag(String text, String separator, Tag tagToRemove) {
-    return from(text.split(separator))
+    return Arrays.stream(text.split(separator))
         .map(word -> removeTagFromWord(word, tagToRemove))
         .reduce((s, s2) -> s + separator + s2)
-        .toBlocking()
-        .singleOrDefault("")
+        .orElse("")
         .trim();
   }
 

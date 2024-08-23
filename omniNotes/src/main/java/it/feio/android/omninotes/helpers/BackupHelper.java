@@ -24,11 +24,10 @@ import static it.feio.android.omninotes.OmniNotes.getAppContext;
 import static it.feio.android.omninotes.utils.ConstantsBase.DATABASE_NAME;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_BACKUP_FOLDER_URI;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_PASSWORD;
+import static java.util.stream.Collectors.toList;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 import androidx.annotation.NonNull;
@@ -50,17 +49,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
-import rx.Observable;
 
 @UtilityClass
 public final class BackupHelper {
@@ -121,7 +119,7 @@ public final class BackupHelper {
       notifyAttachmentBackup(notificationsHelper, list, exported, failedString);
     }
 
-    Observable.from(listOld)
+    listOld.stream()
         .filter(attachment -> !list.contains(attachment))
         .forEach(attachment -> destinationattachmentsDir.findFile(
             attachment.getUri().getLastPathSegment()).delete());
@@ -153,11 +151,11 @@ public final class BackupHelper {
   }
 
   public static List<Note> importNotes(DocumentFileCompat backupDir) {
-    return Observable.from(backupDir.listFiles())
+    return backupDir.listFiles().stream()
         .filter(f -> f.getName().matches("\\d{13}.json"))
         .map(BackupHelper::importNote)
-        .filter(n -> n != null)
-        .toList().toBlocking().single();
+        .filter(Objects::nonNull)
+        .collect(toList());
   }
 
   @Nullable
@@ -206,18 +204,18 @@ public final class BackupHelper {
     AtomicInteger imported = new AtomicInteger();
     ArrayList<Attachment> attachments = DbHelper.getInstance().getAllAttachments();
     var BackupedAttachments = backupAttachmentsDir.listFiles();
-    rx.Observable.from(attachments)
-        .forEach(attachment -> {
-          try {
-            importAttachment(BackupedAttachments, attachmentsDir, attachment);
-            if (notificationsHelper != null) {
-              notificationsHelper.updateMessage(TextHelper.capitalize(getAppContext().getString(R.string.attachment)) + " "
-                      + imported.incrementAndGet() + "/" + attachments.size());
-            }
-          } catch (BackupAttachmentException e) {
-            result.set(false);
-          }
-        });
+    attachments.forEach(attachment -> {
+      try {
+        importAttachment(BackupedAttachments, attachmentsDir, attachment);
+        if (notificationsHelper != null) {
+          notificationsHelper.updateMessage(
+              TextHelper.capitalize(getAppContext().getString(R.string.attachment)) + " "
+                  + imported.incrementAndGet() + "/" + attachments.size());
+        }
+      } catch (BackupAttachmentException e) {
+        result.set(false);
+      }
+    });
     return result.get();
   }
 
@@ -226,8 +224,8 @@ public final class BackupHelper {
     String attachmentName = attachment.getUri().getLastPathSegment();
     try {
       File destinationAttachment = new File(attachmentsDir, attachmentName);
-      var backupedAttachment = Observable.from(backupedAttachments)
-          .filter(ba -> attachmentName.equals(ba.getName())).toBlocking().single();
+      var backupedAttachment = backupedAttachments.stream().filter(ba -> attachmentName.equals(ba.getName()))
+          .findFirst().get();
       DocumentFileHelper.copyFileTo(getAppContext(), backupedAttachment, destinationAttachment);
     } catch (Exception e) {
       LogDelegate.e("Error importing the attachment " + attachment.getUri().getPath(), e);

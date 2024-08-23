@@ -30,6 +30,8 @@ import static it.feio.android.omninotes.utils.ConstantsBase.PREF_PASSWORD;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_SORTING_COLUMN;
 import static it.feio.android.omninotes.utils.ConstantsBase.TIMESTAMP_UNIX_EPOCH;
 import static it.feio.android.omninotes.utils.Navigation.checkNavigation;
+import static java.util.regex.Pattern.MULTILINE;
+import static java.util.stream.Collectors.toList;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -56,6 +58,7 @@ import it.feio.android.omninotes.utils.TagsHelper;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -752,19 +755,17 @@ public class DbHelper extends SQLiteOpenHelper {
     whereCondition.append(" AND " + KEY_TRASHED + " IS ")
         .append(checkNavigation(Navigation.TRASH) ? "" : "NOT ").append("1");
 
-    return rx.Observable.from(getNotes(whereCondition.toString(), true))
+    return getNotes(whereCondition.toString(), true).stream()
         .map(note -> {
-          boolean matches = rx.Observable.from(tags)
-              .all(tag -> {
-                Pattern p = Pattern.compile(".*(\\s|^)" + tag + "(\\s|$).*",
-                    Pattern.MULTILINE);
-                return p.matcher(
-                    (note.getTitle() + " " + note.getContent())).find();
-              }).toBlocking().single();
+          boolean matches = Arrays.stream(tags)
+              .allMatch(tag -> {
+                var p = Pattern.compile(".*(\\s|^)" + tag + "(\\s|$).*", MULTILINE);
+                return p.matcher((note.getTitle() + " " + note.getContent())).find();
+              });
           return matches ? note : null;
         })
-        .filter(o -> o != null)
-        .toList().toBlocking().single();
+        .filter(Objects::nonNull)
+        .collect(toList());
   }
 
   /**

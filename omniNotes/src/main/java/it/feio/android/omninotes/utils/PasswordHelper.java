@@ -36,9 +36,6 @@ import it.feio.android.omninotes.async.bus.PasswordRemovedEvent;
 import it.feio.android.omninotes.db.DbHelper;
 import it.feio.android.omninotes.models.PasswordValidator;
 import lombok.experimental.UtilityClass;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
 @UtilityClass
@@ -139,23 +136,17 @@ public class PasswordHelper {
 
 
   public static void removePassword() {
-    Observable
-        .from(DbHelper.getInstance().getNotesWithLock(true))
-        .subscribeOn(Schedulers.newThread())
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnNext(note -> {
-          note.setLocked(false);
-          DbHelper.getInstance().updateNote(note, false);
-        })
-        .doOnCompleted(() -> {
-          Prefs.edit()
-              .remove(PREF_PASSWORD)
-              .remove(PREF_PASSWORD_QUESTION)
-              .remove(PREF_PASSWORD_ANSWER)
-              .remove("settings_password_access")
-              .apply();
-          EventBus.getDefault().post(new PasswordRemovedEvent());
-        })
-        .subscribe();
+    DbHelper.getInstance().getNotesWithLock(true).forEach(note -> {
+      note.setLocked(false);
+      DbHelper.getInstance().updateNote(note, false);
+    });
+    Prefs.edit()
+        .remove(PREF_PASSWORD)
+        .remove(PREF_PASSWORD_QUESTION)
+        .remove(PREF_PASSWORD_ANSWER)
+        .remove("settings_password_access")
+        .apply();
+    EventBus.getDefault().post(new PasswordRemovedEvent());
   }
+
 }

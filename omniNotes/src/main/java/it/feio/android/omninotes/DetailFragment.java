@@ -195,8 +195,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
-import rx.Observable;
 
 
 public class DetailFragment extends BaseFragment implements OnReminderPickedListener,
@@ -1236,7 +1236,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
   private void categorizeNote() {
     var currentCategory = noteTmp.getCategory() != null ? String.valueOf(noteTmp.getCategory().getId()) : null;
     var  originalCategory = noteOriginal.getCategory() != null ? String.valueOf(noteOriginal.getCategory().getId()) : null;
-    final var categories = Observable.from(DbHelper.getInstance().getCategories())
+    final var categories = DbHelper.getInstance().getCategories().stream()
         .map(category -> {
           if (String.valueOf(category.getId()).equals(currentCategory) && currentCategory != originalCategory) {
             category.setCount(category.getCount() + 1);
@@ -1245,7 +1245,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
             category.setCount(category.getCount() - 1);
           }
           return category;
-        }).toList().toBlocking().single();
+        }).collect(Collectors.toList());
 
     var dialogBuilder = new MaterialDialog.Builder(mainActivity)
         .title(R.string.categorize_as)

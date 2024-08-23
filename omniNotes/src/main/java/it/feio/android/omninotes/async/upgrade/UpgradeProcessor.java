@@ -23,7 +23,7 @@ import static it.feio.android.omninotes.utils.ConstantsBase.MIME_TYPE_FILES;
 import static it.feio.android.omninotes.utils.ConstantsBase.MIME_TYPE_IMAGE;
 import static it.feio.android.omninotes.utils.ConstantsBase.MIME_TYPE_VIDEO;
 import static java.lang.Integer.parseInt;
-import static rx.Observable.from;
+import static java.util.stream.Collectors.toList;
 
 import android.content.ContentValues;
 import android.net.Uri;
@@ -39,13 +39,15 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 
 /**
  * Processor used to perform asynchronous tasks on database upgrade. It's not intended to be used to
- * perform actions strictly related to DB (for this {@link it.feio.android.omninotes.db.DbHelper#onUpgrade(android.database.sqlite.SQLiteDatabase,
+ * perform actions strictly related to DB (for this
+ * {@link it.feio.android.omninotes.db.DbHelper#onUpgrade(android.database.sqlite.SQLiteDatabase,
  * int, int)} DbHelper.onUpgrade()} is used
  */
 public class UpgradeProcessor {
@@ -81,12 +83,12 @@ public class UpgradeProcessor {
   }
 
   private List<Method> getMethodsToLaunch(int dbOldVersion, int dbNewVersion) {
-    return from(getInstance().getClass().getDeclaredMethods())
+    return Arrays.stream(getInstance().getClass().getDeclaredMethods())
         .filter(method -> method.getName().matches(METHODS_PREFIX + "\\d+"))
         .filter(method -> {
           int methodVersionPostfix = parseInt(method.getName().replace(METHODS_PREFIX, ""));
           return dbOldVersion <= methodVersionPostfix && methodVersionPostfix <= dbNewVersion;
-        }).toList().toBlocking().single();
+        }).collect(toList());
   }
 
   /**
@@ -184,16 +186,17 @@ public class UpgradeProcessor {
   private void onUpgradeTo625() {
     var attachmentsDir = StorageHelper.getAttachmentDir();
     var dbHelper = DbHelper.getInstance();
-    from(dbHelper.getAllAttachments())
+    dbHelper.getAllAttachments().stream()
         .filter(attachment -> "content".equals(attachment.getUri().getScheme()))
         .forEach(attachment -> {
-      var fileName = attachment.getUri().getPathSegments().get(attachment.getUri().getPathSegments().size() - 1);
-      var file = new File(attachmentsDir + "/" + fileName);
-      if (file.exists()) {
-        attachment.setUri(Uri.fromFile(file));
-        dbHelper.updateAttachment(attachment);
-      }
-    });
+          var fileName = attachment.getUri().getPathSegments()
+              .get(attachment.getUri().getPathSegments().size() - 1);
+          var file = new File(attachmentsDir + "/" + fileName);
+          if (file.exists()) {
+            attachment.setUri(Uri.fromFile(file));
+            dbHelper.updateAttachment(attachment);
+          }
+        });
   }
 
 }

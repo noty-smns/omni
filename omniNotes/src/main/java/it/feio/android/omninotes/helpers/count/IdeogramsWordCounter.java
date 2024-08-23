@@ -18,7 +18,7 @@
 package it.feio.android.omninotes.helpers.count;
 
 import it.feio.android.omninotes.models.Note;
-import rx.Observable;
+import java.util.Arrays;
 
 public class IdeogramsWordCounter implements WordCounter {
 
@@ -30,9 +30,10 @@ public class IdeogramsWordCounter implements WordCounter {
   @Override
   public int countChars(Note note) {
     String titleAndContent = note.getTitle() + "\n" + note.getContent();
-    return Observable
-        .from(sanitizeTextForWordsAndCharsCount(note, titleAndContent).split(""))
-        .filter(s -> !s.matches("\\s"))
-        .count().toBlocking().single();
+    return Math.toIntExact(
+        Arrays.stream(sanitizeTextForWordsAndCharsCount(note, titleAndContent).split(""))
+            .filter(s -> !s.matches("\\s"))
+            .count());
   }
+
 }

@@ -42,12 +42,9 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.bus.NotesUpdatedEvent;
-import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.utils.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import rx.Observable;
-
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -91,7 +88,7 @@ public class FabCameraNoteTest extends BaseEspressoTest {
   }
 
   public void onEvent(NotesUpdatedEvent notesUpdatedEvent) {
-    Note updatedNote = Observable.from(notesUpdatedEvent.getNotes()).toBlocking().first();
+    var updatedNote = notesUpdatedEvent.getNotes().get(0);
 
     assertEquals(0, updatedNote.getAttachmentsList().size());
     assertEquals(Constants.MIME_TYPE_IMAGE, updatedNote.getAttachmentsList().get(0).getMime_type());
