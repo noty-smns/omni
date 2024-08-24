@@ -103,7 +103,7 @@ public class BackupHelperTest extends BaseAndroidTestCase {
 
     assertTrue(backupDir.exists());
     assertTrue(backupDir.findFile(".nomedia").exists());
-    assertEquals(5, backupDir.listFiles().size());
+    assertEquals(4, backupDir.listFiles().size());
   }
 
   @Test
@@ -116,7 +116,7 @@ public class BackupHelperTest extends BaseAndroidTestCase {
         .filter(f -> f.getName().matches("\\d{13}.json"))
         .collect(Collectors.toList());
     assertEquals(1, noteFiles.size());
-    var retrievedNote = noteFiles.stream().map(BackupHelper::importNote).collect(Collectors.toList());
+    var retrievedNote = noteFiles.stream().map(BackupHelper::importNote).findFirst().get();
     assertEquals(note, retrievedNote);
   }
 

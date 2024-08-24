@@ -37,11 +37,11 @@ class UpgradeProcessorTest : BaseAndroidTestCase() {
         note.attachmentsList[0] = attachment
         dbHelper.updateNote(note, false)
 
-        assertFalse(Stream.of(dbHelper.allAttachments).allMatch { a -> a.single().uri.scheme != "content" });
+        assertFalse(dbHelper.allAttachments.stream().allMatch { a -> a.uri.scheme != "content" });
 
         UpgradeProcessor.process(624, 625)
 
-        assertTrue(Stream.of(dbHelper.allAttachments).allMatch { a -> a.single().uri.scheme != "content" });
+        assertTrue(dbHelper.allAttachments.stream().allMatch { a -> a.uri.scheme != "content" });
     }
 
 }
