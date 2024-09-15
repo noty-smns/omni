@@ -27,7 +27,9 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.widget.Toast;
 import it.feio.android.omninotes.OmniNotes;
@@ -54,14 +56,30 @@ public class ReminderHelper {
 
   public static void addReminder(Context context, Note note, long reminder) {
     if (DateUtils.isFuture(reminder)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12 (API 31) and above
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (!alarmManager.canScheduleExactAlarms()) {
+          Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+          context.startActivity(intent);
+          return;
+        }
+      }
+
       Intent intent = new Intent(context, AlarmReceiver.class);
       intent.putExtra(INTENT_NOTE, ParcelableUtil.marshall(note));
-      PendingIntent sender = PendingIntent.getBroadcast(context, getRequestCode(note), intent,
-          immutablePendingIntentFlag(FLAG_CANCEL_CURRENT));
+      PendingIntent sender = PendingIntent.getBroadcast(
+          context,
+          getRequestCode(note),
+          intent,
+          immutablePendingIntentFlag(PendingIntent.FLAG_CANCEL_CURRENT)
+      );
+
       AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
       am.setExact(AlarmManager.RTC_WAKEUP, reminder, sender);
     }
   }
+
 
   /**
    * Checks if exists any reminder for given note
