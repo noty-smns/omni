@@ -18,11 +18,15 @@
 package it.feio.android.omninotes.utils.date;
 
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
+import com.google.android.material.snackbar.Snackbar;
+
 import it.feio.android.omninotes.helpers.date.RecurrenceHelper;
 import it.feio.android.omninotes.models.listeners.OnReminderPickedListener;
 import java.util.Calendar;
@@ -62,11 +66,20 @@ public class ReminderPickers {
         Calendar reminder = selectedDate.getFirstDate();
         reminder.set(Calendar.HOUR_OF_DAY, hourOfDay);
         reminder.set(Calendar.MINUTE, minute);
+        long reminderTimeInMillis = reminder.getTimeInMillis();
+        long currentTime = System.currentTimeMillis();
 
-        mOnReminderPickedListener.onReminderPicked(reminder.getTimeInMillis());
-        mOnReminderPickedListener.onRecurrenceReminderPicked(
-            RecurrenceHelper
-                .buildRecurrenceRuleByRecurrenceOptionAndRule(recurrenceOption, recurrenceRule));
+        if (reminderTimeInMillis > currentTime) {
+
+          mOnReminderPickedListener.onReminderPicked(reminder.getTimeInMillis());
+          mOnReminderPickedListener.onRecurrenceReminderPicked(
+                  RecurrenceHelper
+                          .buildRecurrenceRuleByRecurrenceOptionAndRule(recurrenceOption, recurrenceRule));
+        }
+        else {
+          View rootView = mActivity.findViewById(android.R.id.content);
+          Snackbar.make(rootView, "Cannot set alarm in the past", Snackbar.LENGTH_LONG).show();
+        }
       }
     });
 
