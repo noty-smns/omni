@@ -234,6 +234,7 @@
   <string name="nothing_selected">Nothing selected</string>
   <string name="insecure_content_found">Some of the received content was dangerous, it has been ignored</string>
   <string name="denied_notifications_permission">Denying notification permission reminders will not be shown</string>
+  <string name="past_reminder_set">Cannot set reminder in past</string>
 
   <!-- Settings -->
   <string name="dashclock_description">Displays some statistics and expiring reminders from Omni Notes</string>
