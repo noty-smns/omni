@@ -18,11 +18,15 @@
 package it.feio.android.omninotes.utils.date;
 
 import android.os.Bundle;
+
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
+import com.google.android.material.snackbar.Snackbar;
+
+import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.helpers.date.RecurrenceHelper;
 import it.feio.android.omninotes.models.listeners.OnReminderPickedListener;
 import java.util.Calendar;
@@ -62,11 +66,14 @@ public class ReminderPickers {
         Calendar reminder = selectedDate.getFirstDate();
         reminder.set(Calendar.HOUR_OF_DAY, hourOfDay);
         reminder.set(Calendar.MINUTE, minute);
+        if (reminder.getTimeInMillis() < System.currentTimeMillis()) {
+          Snackbar.make(mActivity.findViewById(android.R.id.content),mActivity.getString(R.string.past_reminder_set), Snackbar.LENGTH_LONG).show();
+          return;
+        }
 
         mOnReminderPickedListener.onReminderPicked(reminder.getTimeInMillis());
         mOnReminderPickedListener.onRecurrenceReminderPicked(
-            RecurrenceHelper
-                .buildRecurrenceRuleByRecurrenceOptionAndRule(recurrenceOption, recurrenceRule));
+                RecurrenceHelper.buildRecurrenceRuleByRecurrenceOptionAndRule(recurrenceOption, recurrenceRule));
       }
     });
 
@@ -91,5 +98,4 @@ public class ReminderPickers {
     pickerFrag.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
     pickerFrag.show(mActivity.getSupportFragmentManager(), "SUBLIME_PICKER");
   }
-
 }
