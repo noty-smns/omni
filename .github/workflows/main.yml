@@ -18,7 +18,7 @@ jobs:
           cache: 'gradle'
 
       - name: Run unit/instrumentation tests and coverage generation
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v3
         with:
           api-level: 30
           target: google_apis
@@ -27,6 +27,10 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel qemu
           disable-animations: true
           script: ./gradlew -Pandroid.testInstrumentationRunnerArguments.notAnnotation=androidx.test.filters.FlakyTest,androidx.test.filters.LargeTest jacocoTestReport --stacktrace
+          emulator-boot-timeout: 600 # Increased timeout to 10 minutes
+
+      - name: Verify emulator is ready
+        run: adb wait-for-device
 
       - name: SonarCloud static code and coverage analysis
         env:
