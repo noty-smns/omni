@@ -1,68 +1,60 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2013-2024 Federico Iosue (federico@iosue.it)
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <!-- Material -->
-  <color name="colorPrimary">#3F51B5</color>
-  <color name="colorPrimaryDark">#303F9F</color>
-  <color name="colorAccent">#F44336</color>
-  <color name="colorAccentPressed">#D32F2F</color>
-  <color name="materialGrey100">#F5F5F5</color>
+  <!-- Material Core Colors -->
+  <color name="colorPrimary">#8E5DC9</color> <!-- Lavender -->
+  <color name="colorPrimaryDark">#8E5DC9</color> <!-- Deeper lavender -->
+  <color name="colorAccent">#A678F2</color> <!-- Soft purple-lavender -->
+  <color name="colorAccentPressed">#8E5DC9</color>
+
+  <!-- Light neutrals for Material feel -->
+  <color name="materialGrey100">#f4f4f4</color>
 
   <!-- Statusbar overlay -->
-  <color name="statusbar_overlay">#20000000</color>
+  <color name="statusbar_overlay">#20646CFF</color> <!-- Transparent lavender overlay -->
 
-  <!--Floating action button-->
-  <color name="half_black">#808080</color>
-  <color name="white">#fafafa</color>
-  <color name="white_pressed">#f1f1f1</color>
-  <color name="action_color">#B78B00</color>
-  <color name="action_color_pressed">#916E02</color>
+  <!-- Floating action button / Buttons -->
+  <color name="half_black">#66464646</color> <!-- softer grey -->
+  <color name="white">#FFFFFF</color>
+  <color name="white_pressed">#f0f0f0</color>
+  <color name="action_color">#A678</color>
+  <color name="action_color_pressed">#8E5DC9</color>
   <color name="white_overlay">#bbFFFFFF</color>
-  <color name="labels_background">#dd222222</color>
+  <color name="labels_background">#ddf0f0f0</color> <!-- light bg for labels -->
 
-  <color name="navigation_bg">#ffffffff</color>
-  <color name="gray_bg">#e2e2e2</color>
-  <color name="list_bg">#eeffffff</color>
-  <color name="kitkat_gray_light">#19000000</color>
-  <color name="list_bg_pressed">#88336699</color>
-  <color name="list_bg_selected">#4e3f51b5</color>
-  <color name="list_note_title">#cc000000</color>
-  <color name="list_note_dates">#aa000000</color>
-  <color name="about_bg">#dd222222</color>
+  <!-- Backgrounds -->
+  <color name="navigation_bg">#f4f4f4</color>
+  <color name="gray_bg">#f4f4f4</color>
+  <color name="list_bg">#FAFAFA</color>
+  <color name="kitkat_gray_light">#14000000</color>
+  <color name="list_bg_pressed">#33646CFF</color> <!-- Transparent lavender -->
+  <color name="list_bg_selected">#4E646CFF</color>
+
+  <!-- Text & List items -->
+  <color name="list_note_title">#cc1e1e1e</color> <!-- Dark grey for titles -->
+  <color name="list_note_dates">#aa444444</color> <!-- Slightly lighter -->
+  <color name="about_bg">#ddf5f5f5</color>
   <color name="drawer_text">@color/text_color</color>
-  <color name="drawer_line">#ee222222</color>
-  <color name="text_gray">#2d2d2d</color>
+  <color name="drawer_line">#eeDDDDDD</color> <!-- subtle line -->
+  <color name="text_gray">#333333</color>
   <color name="location_text">@color/text_color_lighter</color>
-  <color name="selected">#8833B5E5</color>
+  <color name="selected">#88646CFF</color>
   <color name="transparent">#00ffffff</color>
-  <color name="audio_attachment_text">#aa000000</color>
-  <color name="text_color">#b9000000</color>
-  <color name="text_color_lighter">#9b000000</color>
+  <color name="audio_attachment_text">#aa333333</color>
+  <color name="text_color">#b91e1e1e</color>
+  <color name="text_color_lighter">#9b444444</color>
 
-  <!-- toasts -->
-  <color name="confirm">#303F9F</color>
-  <color name="warning">#ff9800</color>
-  <color name="alert">#e51c23</color>
-  <color name="info">#ee33B5E5</color>
+  <!-- Toasts & Alerts -->
+  <color name="confirm">#646CFF</color> <!-- Keep it lavender-themed -->
+  <color name="warning">#FFC107</color> <!-- Material amber -->
+  <color name="alert">#F44336</color> <!-- Material red -->
+  <color name="info">#A678F2</color>
+
+  <!-- Overlay -->
   <color name="black_overlay">#33000000</color>
 
-  <!--Undo bar-->
-  <color name="card_undobar_material_text_color">#4CAF50</color>
-  <color name="card_undobar_material_background_color">#323232</color>
+  <!-- Undo bar -->
+  <color name="card_undobar_material_text_color">#4CAF50</color> <!-- Keeping green for success -->
+  <color name="card_undobar_material_background_color">#323232</color> <!-- Dark neutral stays -->
 
 </resources>
